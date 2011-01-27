@@ -1,7 +1,7 @@
 package com.notnoop.gym.fitincentives
 package model
 
-import java.util.Calendar
+import java.util.Date
 
 import net.liftweb.util.Helpers
 
@@ -26,14 +26,22 @@ class Member extends MongoRecord[Member] with MongoId[Member]
 
   object balance extends IntField(this)
 
-  object entries extends MongoCaseClassListField[Member, Entry](this)
+  object transactions extends MongoCaseClassListField[Member, Transcation](this)
+  object events extends MongoCaseClassListField[Member, Event](this)
 }
 
 object Member extends Member with MongoMetaRecord[Member]
 
-case class Entry(
-  date: Calendar,
+case class Transcation(
+  id: Long,
+  date: Date,
   entryType: String,
   description: String,
   reward: Int
+)
+
+case class Event(
+  id: Long,
+  date: Date,
+  description: String
 )
