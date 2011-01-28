@@ -41,7 +41,7 @@ case class Transcation(
 )
 
 case class Event(
-  id: Long,
+  id: String,
   date: Date,
   description: String
 )
