@@ -9,6 +9,9 @@ import org.apache.http.client._
 import scala.io.Source
 import org.apache.http.message._
 
+import com.gargoylesoftware.htmlunit._
+import html._
+
 import collection.JavaConversions._
 
 class MindBodyFetcher(username: String, password: String, siteId: String) {
@@ -37,14 +40,14 @@ class MindBodyFetcher(username: String, password: String, siteId: String) {
     source.mkString
   }
 
-  def generateReport() = {
+  def generateReport(from: String, to: String) = {
     val formparam = List(
         new BasicNameValuePair("PostAction", "Generate"),
         new BasicNameValuePair("sr-range-opt", ""),
         new BasicNameValuePair("sr-name", ""),
         new BasicNameValuePair("txtFilterState1", "filter-open"),
-        new BasicNameValuePair("requiredtxtDateStart", "1/27/2011"),
-        new BasicNameValuePair("requiredtxtDateEnd", "1/27/2011"),
+        new BasicNameValuePair("requiredtxtDateStart", from),
+        new BasicNameValuePair("requiredtxtDateEnd", to),
         new BasicNameValuePair("txtFilterState2", "filter-open"),
         new BasicNameValuePair("optFilterTagged", "false"),
         new BasicNameValuePair("optSaleLoc", "0"),
@@ -67,4 +70,38 @@ class MindBodyFetcher(username: String, password: String, siteId: String) {
     val source = Source.fromInputStream(response.getEntity.getContent)
     source.mkString
   }
+
+  def getSales(from: String, to: String) = {
+    login()
+    val r = generateReport(from, to)
+    val client = new WebClient()
+    client.setJavaScriptEnabled(false)
+    client.setCssEnabled(false)
+
+
+    val response = new StringWebResponse(r, new java.net.URL("http://example.com"))
+    val html = HTMLParser.parseHtml(response, client.getCurrentWindow())
+
+    def clean(s: String) = s.replaceAll("[^\\p{ASCII}]", "").trim
+    def isInt(s: String) = try { s.trim.toInt; true } catch { case _ => false }
+    def isSale(row: HtmlTableRow) = row.getCells.size == 17 && isInt(clean(row.getCells.get(0).getTextContent))
+
+    val table = html.getHtmlElementById("result-table").asInstanceOf[HtmlTable]
+
+    for (row <- table.getRows() if isSale(row))
+      yield MindBodySale(
+        clean(row.getCells().get(0).getTextContent()),
+        clean(row.getCells().get(1).getTextContent()),
+        clean(row.getCells().get(2).getTextContent()),
+        clean(row.getCells().get(3).getTextContent())
+      )
+  }
+
 }
+
+case class MindBodySale(
+  saleId: String,
+  dateOfPurchase: String,
+  client: String,
+  description: String
+)
