@@ -40,8 +40,8 @@ object TransactionCalcTestSpecs extends Specification {
     "credit once offset passed" in {
       trigger.creditTransactions(
         List(Event(0L, new java.util.Date, eventId),
-            Event(1L, new java.util.Date, eventId),
-            Event(2L, new java.util.Date, eventId)),
+          Event(1L, new java.util.Date, eventId),
+          Event(2L, new java.util.Date, eventId)),
         List()) must have size(1)
     }
 
@@ -49,17 +49,18 @@ object TransactionCalcTestSpecs extends Specification {
       trigger.creditTransactions(
         List(
           Event(0L, new java.util.Date, eventId),
-            Event(1L, new java.util.Date, eventId),
-            Event(2L, new java.util.Date, eventId),
-            Event(3L, new java.util.Date, eventId)),
+          Event(1L, new java.util.Date, eventId),
+          Event(2L, new java.util.Date, eventId),
+          Event(3L, new java.util.Date, eventId)),
         List()) must have size(2)
     }
 
     "doesn't credit the same event multiple times" in {
       trigger.creditTransactions(
-        List(Event(0L, new java.util.Date, eventId),
-            Event(1L, new java.util.Date, eventId),
-            Event(2L, new java.util.Date, eventId)),
+        List(
+          Event(0L, new java.util.Date, eventId),
+          Event(1L, new java.util.Date, eventId),
+          Event(2L, new java.util.Date, eventId)),
         List(Transaction(0L, new java.util.Date, displayName, displayName, 1L, 100))
       ) must beEmpty
     }
@@ -67,9 +68,9 @@ object TransactionCalcTestSpecs extends Specification {
     "credits again if user is awesome but was credit before as well" in {
       trigger.creditTransactions(
         List(Event(0L, new java.util.Date, eventId),
-            Event(1L, new java.util.Date, eventId),
-            Event(2L, new java.util.Date, eventId),
-            Event(3L, new java.util.Date, eventId)),
+          Event(1L, new java.util.Date, eventId),
+          Event(2L, new java.util.Date, eventId),
+          Event(3L, new java.util.Date, eventId)),
         List(Transaction(0L, new java.util.Date, displayName, displayName, 1L, 100))
       ) must have size(1)
     }
@@ -78,9 +79,9 @@ object TransactionCalcTestSpecs extends Specification {
       trigger.creditTransactions(
         List(
           Event(0L, new java.util.Date, eventId + "A"),
-            Event(1L, new java.util.Date, eventId + "A"),
-            Event(2L, new java.util.Date, eventId + "A"),
-            Event(3L, new java.util.Date, eventId + "A")),
+          Event(1L, new java.util.Date, eventId + "A"),
+          Event(2L, new java.util.Date, eventId + "A"),
+          Event(3L, new java.util.Date, eventId + "A")),
         List()) must beEmpty
     }
 
@@ -88,9 +89,9 @@ object TransactionCalcTestSpecs extends Specification {
       trigger.creditTransactions(
         List(
           Event(0L, new java.util.Date, eventId),
-            Event(1L, new java.util.Date, eventId + "A"),
-            Event(2L, new java.util.Date, eventId + "A"),
-            Event(3L, new java.util.Date, eventId)),
+          Event(1L, new java.util.Date, eventId + "A"),
+          Event(2L, new java.util.Date, eventId + "A"),
+          Event(3L, new java.util.Date, eventId)),
         List()) must have size(1)
     }
   }
