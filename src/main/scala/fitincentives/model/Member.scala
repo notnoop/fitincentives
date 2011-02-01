@@ -26,22 +26,23 @@ class Member extends MongoRecord[Member] with MongoId[Member]
 
   object balance extends IntField(this)
 
-  object transactions extends MongoCaseClassListField[Member, Transcation](this)
+  object transactions extends MongoCaseClassListField[Member, Transaction](this)
   object events extends MongoCaseClassListField[Member, Event](this)
 }
 
 object Member extends Member with MongoMetaRecord[Member]
 
-case class Transcation(
+case class Transaction(
   id: Long,
   date: Date,
   entryType: String,
   description: String,
+  lastEvent: Long,
   reward: Int
 )
 
 case class Event(
-  id: String,
+  id: Long,
   date: Date,
   description: String
 )
