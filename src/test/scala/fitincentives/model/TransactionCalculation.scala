@@ -55,6 +55,24 @@ object TransactionCalcTestSpecs extends Specification {
         List()) must have size(2)
     }
 
+    "credit multiple times if member is being great with respect to order" in {
+      val transactions = trigger.creditTransactions(
+        List(
+          Event(0L, new java.util.Date, eventId),
+          Event(1L, new java.util.Date, eventId),
+          Event(2L, new java.util.Date, eventId),
+          Event(3L, new java.util.Date, eventId)),
+        List())
+
+      transactions must have size(2)
+      transactions(0) must beLike {
+        case Transaction(1L, _, _, _, 1L, 100) => true
+      }
+      transactions(1) must beLike {
+        case Transaction(2L, _, _, _, 3L, 100) => true
+      }
+    }
+
     "doesn't credit the same event multiple times" in {
       trigger.creditTransactions(
         List(
